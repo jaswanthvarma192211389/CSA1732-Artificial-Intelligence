@@ -1,0 +1,111 @@
+# A class to handle the Tic-Tac-Toe game
+class TicTacToe:
+    def __init__(self):
+        self.board = [[' ' for _ in range(3)] for _ in range(3)]
+        self.current_winner = None
+
+    def print_board(self):
+        for row in self.board:
+            print('| ' + ' | '.join(row) + ' |')
+
+    def available_moves(self):
+        return [(r, c) for r, row in enumerate(self.board) for c, col in enumerate(row) if col == ' ']
+
+    def empty_squares(self):
+        return ' ' in [col for row in self.board for col in row]
+
+    def num_empty_squares(self):
+        return len(self.available_moves())
+
+    def make_move(self, square, letter):
+        row, col = square
+        if self.board[row][col] == ' ':
+            self.board[row][col] = letter
+            if self.winner(row, col, letter):
+                self.current_winner = letter
+            return True
+        return False
+
+    def winner(self, row, col, letter):
+        # Check the row
+        if all([spot == letter for spot in self.board[row]]):
+            return True
+        # Check the column
+        if all([self.board[r][col] == letter for r in range(3)]):
+            return True
+        # Check diagonals
+        if row == col and all([self.board[i][i] == letter for i in range(3)]):
+            return True
+        if row + col == 2 and all([self.board[i][2-i] == letter for i in range(3)]):
+            return True
+        return False
+
+def minimax(state, depth, max_player, game):
+    max_letter = 'X'
+    min_letter = 'O'
+
+    if game.current_winner == max_letter:
+        return {'position': None, 'score': 1 * (depth + 1)}
+    elif game.current_winner == min_letter:
+        return {'position': None, 'score': -1 * (depth + 1)}
+    elif not game.empty_squares():
+        return {'position': None, 'score': 0}
+
+    if max_player:
+        best = {'position': None, 'score': -float('inf')}
+        for possible_move in game.available_moves():
+            game.make_move(possible_move, max_letter)
+            sim_score = minimax(game, depth - 1, False, game)
+            game.board[possible_move[0]][possible_move[1]] = ' '
+            game.current_winner = None
+            sim_score['position'] = possible_move
+            if sim_score['score'] > best['score']:
+                best = sim_score
+        return best
+    else:
+        best = {'position': None, 'score': float('inf')}
+        for possible_move in game.available_moves():
+            game.make_move(possible_move, min_letter)
+            sim_score = minimax(game, depth - 1, True, game)
+            game.board[possible_move[0]][possible_move[1]] = ' '
+            game.current_winner = None
+            sim_score['position'] = possible_move
+            if sim_score['score'] < best['score']:
+                best = sim_score
+        return best
+
+def play_game():
+    game = TicTacToe()
+    game.print_board()
+
+    letter = 'X'
+    while game.empty_squares():
+        if letter == 'O':
+            square = minimax(game, len(game.available_moves()), False, game)['position']
+            if square is None:
+                break
+            game.make_move(square, 'O')
+        else:
+            valid_square = False
+            while not valid_square:
+                square = input('Enter your move (row,col): ')
+                try:
+                    row, col = map(int, square.split(','))
+                    if game.make_move((row, col), 'X'):
+                        valid_square = True
+                    else:
+                        print("Invalid move. Try again.")
+                except:
+                    print("Invalid input. Enter row,col")
+
+        game.print_board()
+        if game.current_winner:
+            print(letter + ' wins!')
+            return
+        letter = 'O' if letter == 'X' else 'X'
+
+    if not game.current_winner:
+        print("It's a tie!")
+
+if __name__ == '__main__':
+    play_game()
