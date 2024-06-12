@@ -1,0 +1,16 @@
+person('Alice', date(1990, 5, 17)).
+person('Bob', date(1985, 8, 23)).
+person('Charlie', date(1992, 12, 4)).
+person('Diana', date(2000, 1, 15)).
+person('Eve', date(1988, 7, 30)).
+find_dob(Name, DOB) :-
+    person(Name, DOB).
+find_name(DOB, Name) :-
+    person(Name, DOB).
+born_in_year(Year, Name) :-
+    person(Name, date(Year, _, _)).
+born_in_month(Month, Name) :-
+    person(Name, date(_, Month, _)).
+born_on_day(Day, Name) :-
+    person(Name, date(_, _, Day)).
+
