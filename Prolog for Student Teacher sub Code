@@ -1,0 +1,30 @@
+student('Alice', 'CS101').
+student('Bob', 'CS102').
+student('Charlie', 'CS101').
+student('Diana', 'CS103').
+student('Eve', 'CS102').
+
+teacher('Prof. Smith', 'CS101').
+teacher('Prof. Johnson', 'CS102').
+teacher('Prof. Brown', 'CS103').
+
+subject('CS101', 'Computer Science 101').
+subject('CS102', 'Computer Science 102').
+subject('CS103', 'Computer Science 103').
+find_subject_name(SubjectCode, SubjectName) :-
+    subject(SubjectCode, SubjectName).
+students_in_subject(SubjectName, StudentName) :-
+    subject(SubjectCode, SubjectName),
+    student(StudentName, SubjectCode).
+teacher_of_subject(SubjectName, TeacherName) :-
+    subject(SubjectCode, SubjectName),
+    teacher(TeacherName, SubjectCode).
+subjects_taught_by_teacher(TeacherName, SubjectName) :-
+    teacher(TeacherName, SubjectCode),
+    subject(SubjectCode, SubjectName).
+subjects_taken_by_student(StudentName, SubjectName) :-
+    student(StudentName, SubjectCode),
+    subject(SubjectCode, SubjectName).
+students_of_teacher(TeacherName, StudentName) :-
+    teacher(TeacherName, SubjectCode),
+    student(StudentName, SubjectCode).
